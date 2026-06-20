@@ -2,6 +2,8 @@
 from crewai import Agent, Crew, Task, Process
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
+from typing import Any
+from crewai import TaskOutput
 
 
 @CrewBase
@@ -16,6 +18,23 @@ class ReportSummarizationCrew():
     tasks_config = "config/tasks.yaml"
 
     # define the both the agents.
+
+    # define the guardrail for report summarization word count.
+
+    def validate_word_count_of_summary(self, result: TaskOutput) -> tuple[bool, Any]:
+        try:
+            word_limit = 400
+            result: str = result.raw.strip()
+
+            word_count = len(result.split(" "))
+
+            if word_count > word_limit:
+                return (False, "Summary exceeds the word count of 300 words, reduce the length to 300 words")
+            return (True, result)
+        except Exception as e:
+            return ( False, f"Unexpected error as {str(e)}")
+
+
 
     @agent
     def report_generation(self)-> Agent:
@@ -39,14 +58,17 @@ class ReportSummarizationCrew():
     def report_generation_task(self) -> Task:
         return Task(
             config = self.tasks_config['report_generation_task'],
-            output_file = "reports/report.md"
+            output_file = "reports/report_new.md"
         )
 
     @task
     def report_summarization_task(self)-> Task:
         return Task(
             config = self.tasks_config['report_summarization_task'],
-            output_file = "reports/report_summary.md"
+            output_file = "reports/report_summary_new.md",
+            guardrial= self.validate_word_count_of_summary,
+            guardrail_max_retries = 3
+
         )
 
     
