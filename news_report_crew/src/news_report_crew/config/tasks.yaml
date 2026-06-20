@@ -1,0 +1,22 @@
+
+reporting_task:
+  description: >
+    Your task is to do a web serach and gather the top headline for {country}.
+    And once you have headline you have to perform 4 task on it.
+    1. gather headline and note it.
+    2. Also note the url of the headline source.
+    3. summarize the news into one paragraph long.
+    4. Also note the name of the news egency that posted the news.
+
+    Make sure that to get the latest new of {country} and summarize in everything in the structured format.
+     
+   
+  expected_output: >
+    The expected output is a json file where we have a list of top 5 headline for {country}.
+    The Json file having the some following keys for each  news headline.
+    1. headline 
+    2. Url 
+    3. News_Summary
+    4. News_agency_Name 
+    
+  agent: news_reporter
